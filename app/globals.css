@@ -1,9 +1,14 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #070709; color: #F5F1E8; }
-a { color: inherit; }
-button { cursor: pointer; font-family: inherit; }
-input { font-family: inherit; outline: none; }
-img { max-width: 100%; }
-@media (max-width: 768px) {
-  div[style*="gridTemplateColumns: 1.2fr 0.8fr"] { grid-template-columns: 1fr !important; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  background: #000000 !important;
+  color: #ffffff !important;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
 }
+body {
+  background: #000000 !important;
+}
+::selection { background: #ff0000; color: #fff; }
+::-webkit-scrollbar { width: 6px; background: #000; }
+::-webkit-scrollbar-thumb { background: #ff0000; border-radius: 10px; }
