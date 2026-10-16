@@ -1,29 +1,16 @@
-import os, stripe
-from flask import Flask, jsonify, request
+import os
+from flask import Flask, jsonify
 
 app = Flask(__name__)
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
-@app.route("/create-checkout-session", methods=["POST"])
-def create_checkout_session():
-    try:
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': 'usd',
-                    'product_data': {'name': 'Abismal Engine Pro - Acceso Vitalicio'},
-                    'unit_amount': 4900, # $49.00 USD
-                },
-                'quantity': 1,
-            }],
-            mode='payment',
-            success_url='https://iaabismalhellfire.net/success?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url='https://iaabismalhellfire.net/cancel',
-        )
-        return jsonify({"checkout_url": session.url})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
+@app.route("/health")
+def health_check():
+    return jsonify({"status": "healthy", "service": "abyssal-engine", "engine": "active"})
+
+@app.route("/")
+def index():
+    return "🔥 Abyssal Engine - Operativo 24/7 con FastAPI/Flask y C++ SIMD!"
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
