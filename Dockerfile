@@ -1,51 +1,21 @@
-# --- Builder Stage ---
-FROM ubuntu:22.04 AS builder
-RUN apt-get update && apt-get install -y clang cmake libomp-dev build-essential
+FROM node:18-alpine AS builder
 WORKDIR /app
-COPY main.cpp .
-RUN clang++ -O3 -std=c++20 -march=x86-64-v3 -ffast-math -fopenmp main.cpp -o abyssal_engine
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build -- --webpack
 
-# --- Production Stage ---
-FROM ubuntu:22.04
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y python3 python3-pip libgomp1 && rm -rf /var/lib/apt/lists/*
-
+FROM node:18-alpine AS runner
 WORKDIR /app
-COPY --from=builder /app/abyssal_engine .
-COPY server.py requirements.txt ./
-COPY models/ ./models/ 2>/dev/null || true
-
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-EXPOSE 8080
-CMD ["gunicorn", "-w", "4", "-k", "gthread", "--threads", "8", "-b", "0.0.0.0:8080", "server:app"]
-# --- ETAPA 1: Compilación C++20 con Optimización SIMD Extrema ---
-FROM ubuntu:22.04 AS builder
-RUN apt-get update && apt-get install -y clang cmake libomp-dev build-essential
-WORKDIR /app
-COPY core/ ./core/
-RUN clang++ -O3 -std=c++20 -march=x86-64-v3 -ffast-math -fopenmp core/main.cpp -o abyssal_engine
-
-# --- ETAPA 2: Runtime Ligero de Alta Velocidad ---
-FROM ubuntu:22.04
-RUN apt-get update && apt-get install -y python3 python3-pip libgomp1 && rm -rf /var/lib/apt/lists/*
-WORKDIR /app
-COPY --from=builder /app/core/abyssal_engine .
-COPY server.py requirements.txt ./
-RUN pip3 install --no-cache-dir -r requirements.txt
-EXPOSE 8080
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8080", "server:app"]
-FROM ubuntu:22.04 AS builder
-RUN apt-get update && apt-get install -y clang cmake libomp-dev build-essential
-WORKDIR /app
-COPY core/ ./core/
-RUN clang++ -O3 -std=c++20 -march=x86-64-v3 -ffast-math -fopenmp core/main.cpp -o abyssal_engine
-
-FROM ubuntu:22.04
-RUN apt-get update && apt-get install -y python3 python3-pip libgomp1 && rm -rf /var/lib/apt/lists/*
-WORKDIR /app
-COPY --from=builder /app/core/abyssal_engine .
-COPY server.py requirements.txt ./
-RUN pip3 install --no-cache-dir -r requirements.txt
-EXPOSE 8080
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8080", "server:app"]
+ENV NODE_ENV=production
+RUN apk add --no-cache dumb-init
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/next.config.js ./next.config.js
+USER nodejs
+EXPOSE 3000
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["npm", "start"]

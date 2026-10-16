@@ -1,23 +1,41 @@
 import json, pathlib, random
 
 BANDS = {
-    "BLACK": ["Mayhem", "Darkthrone", "Burzum", "Immortal", "Watain", "Gorgoroth", "Behemoth", "Emperor", "Marduk", "1349"],
-    "DEATH": ["Morbid Angel", "Cannibal Corpse", "Bloodbath", "Deicide", "Obituary", "Death", "Dying Fetus", "Suffocation"],
-    "THRASH": ["Slayer", "Kreator", "Sodom", "Exodus", "Destruction", "Overkill", "Testament"]
+    "BLACK": ["Mayhem", "Darkthrone", "Burzum", "Immortal", "Watain", "Gorgoroth", "Behemoth", "Emperor", "Marduk", "Satyricon"],
+    "DEATH": ["Morbid Angel", "Cannibal Corpse", "Bloodbath", "Deicide", "Obituary", "Death", "Dying Fetus", "Suffocation", "Nile"],
+    "THRASH": ["Slayer", "Kreator", "Sodom", "Exodus", "Destruction", "Overkill", "Testament", "Sepultura"],
+    "DOOM": ["Opeth", "Candlemass", "Paradise Lost", "Katatonia", "My Dying Bride"]
 }
 
+TITLES = [
+    "Freezing Moon", "Dunkelheit", "Tornekratt", "Raining Blood", "Pleasure to Kill", 
+    "Agent Orange", "Altars of Madness", "Left Hand Path", "Demigod", "Evangelion"
+]
+
 tracks = []
-for sub, bands in BANDS.items():
-    for i in range(33):
-        tracks.append({
-            "id": f"{sub.lower()}-{i+1}",
-            "title": f"{random.choice(bands)} - Track Extreme #{i+1}",
-            "genre": sub,
-            "tier": "pro" if i % 2 == 0 else "free"
-        })
+used = set()
 
-pathlib.Path("public/data").mkdir(parents=True, exist_ok=True)
-with open("public/data/metal-tracks.json", "w") as f:
-    json.dump(tracks, f, indent=2)
+while len(tracks) < 1000:
+    sub = random.choice(list(BANDS.keys()))
+    band = random.choice(BANDS[sub])
+    base = random.choice(TITLES)
+    title = base if f"{band}-{base}" not in used else f"{base} Ritual {len(tracks)}"
+    key = f"{band}-{title}"
+    if key in used:
+        continue
+    used.add(key)
+    tracks.append({
+        "id": f"track_{len(tracks):04d}",
+        "band": band,
+        "title": title,
+        "sub": sub,
+        "year": random.randint(1985, 2026),
+        "yt": "J5yta7KG4Rg",
+        "tier": "free" if len(tracks) < 200 else "pro"
+    })
 
-print("✅ [CATÁLOGO] 1000 tracks extremos generados con éxito.")
+pathlib.Path("public/data/metal-tracks.json").write_text(
+    json.dumps({"version": "5.0", "engine": "AeroCore-X", "total": len(tracks), "tracks": tracks}, ensure_ascii=False, indent=2),
+    encoding="utf-8"
+)
+print(f"🔥 {len(tracks)} Rolas generadas en public/data/metal-tracks.json")
