@@ -8,3 +8,9 @@ _bak
 
 _bak
 .env*
+abyssal_engine
+core/abyssal_engine
+.env
+.env.local
+node_modules
+.next
