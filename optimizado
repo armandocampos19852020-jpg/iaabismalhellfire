@@ -1,0 +1,6 @@
+flask
+gunicorn
+stripe
+qdrant-client
+torch
+
