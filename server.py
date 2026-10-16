@@ -1,3 +1,30 @@
+import os
+import stripe
+from fastapi import FastAPI, Request, HTTPException
+
+app = FastAPI(title="ABYSSAL-ENGINE-PROD", version="3.0.0")
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+ENDPOINT_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+
+@app.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    payload = await request.body()
+    sig_header = request.headers.get("Stripe-Signature")
+    
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, ENDPOINT_SECRET)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Payload inválido")
+    except stripe.error.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Firma de Stripe inválida")
+
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        customer_email = session.get("customer_details", {}).get("email")
+        print(f"[STRIPE_SUCCESS] Acceso Pro activado para: {customer_email}")
+        # Aquí disparas la base de datos o Redis para subir el tier del usuario
+
+    return {"status": "success", "received": True}
 import os, subprocess
 from fastapi import FastAPI, HTTPException
 
