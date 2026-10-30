@@ -2,21 +2,50 @@ import os
 from fastapi import FastAPI, Request, HTTPException
 import stripe
 
-app = FastAPI(title="IAabismal Hellfire API", version="5.0")
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "sk_test_mock")
+app = FastAPI(title="IAabismal Hellfire Core API", version="5.0")
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "sk_test_placeholder")
+ENDPOINT_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "whsec_placeholder")
 
 @app.get("/")
-def read_root():
+def health():
     return {"engine": "AeroCore-X C++20 SIMD", "status": "online", "mode": "24/7/365"}
+
+@app.post("/create-checkout-session")
+async def create_checkout_session():
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {'name': 'Hellfire Pro - Acceso Vitalicio & 1000 Tracks O(1)'},
+                    'unit_amount': 2000,
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url='https://iaabismalhellfire.net/success?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url='https://iaabismalhellfire.net/cancel',
+        )
+        return {"url": session.url}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
     payload = await request.body()
-    sig = request.headers.get("Stripe-Signature")
+    sig_header = request.headers.get('stripe-signature')
     try:
-        event = {"type": "checkout.session.completed"}
-        if event["type"] == "checkout.session.completed":
-            print("[+] Pago completado y verificado en red Abismal.")
+        event = stripe.Webhook.construct_event(payload, sig_header, ENDPOINT_SECRET)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    return {"received": True}
+        raise HTTPException(status_code=400, detail=f"Webhook Error: {str(e)}")
+
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        print(f"🔥 [STRIPE] Pago completado: {session.id}")
+
+    return {"status": "success"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("server:app", host="0.0.0.0", port=8080, workers=4)

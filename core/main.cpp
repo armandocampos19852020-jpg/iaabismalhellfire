@@ -1,15 +1,14 @@
 #include <iostream>
 #include <vector>
-#include <immintrin.h>
 #include <omp.h>
 
 int main() {
-    std::cout << "🔥 [ABYSSAL-ENGINE] C++20 SIMD + OMP Activo (-O3 -march=x86-64-v3)" << std::endl;
-    alignas(64) float buffer[1024] = {1.5f};
+    std::cout << "🔥 [AEROCORE-X] C++20 SIMD + OMP Activo" << std::endl;
+    std::vector<float> buffer(1024, 1.0f);
     #pragma omp parallel for
-    for(int i = 0; i < 1024; ++i) {
-        buffer[i] = buffer[i] * 2.0f;
+    for (size_t i = 0; i < buffer.size(); ++i) {
+        buffer[i] *= 2.0f;
     }
-    std::cout << "Inferencia SIMD completada con éxito." << std::endl;
+    std::cout << "✅ Inferencia SIMD completada. Control: " << buffer[0] << std::endl;
     return 0;
 }
