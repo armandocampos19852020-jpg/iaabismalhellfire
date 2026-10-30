@@ -10,6 +10,6 @@ int main() {
     for(int i = 0; i < 1024; ++i) {
         buffer[i] = buffer[i] * 2.0f;
     }
-    std::cout << "Inferencia SIMD completada a velocidad de pulso." << std::endl;
+    std::cout << "Inferencia SIMD completada con éxito." << std::endl;
     return 0;
 }

@@ -1,5 +1,15 @@
-INFO:     Started server process [22115]
+nohup: ignoring input
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started parent process [26449]
+INFO:     Started server process [26453]
+INFO:     Started server process [26454]
+INFO:     Started server process [26451]
+INFO:     Waiting for application startup.
+INFO:     Waiting for application startup.
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:38130 - "GET /health HTTP/1.1" 404 Not Found
+INFO:     Application startup complete.
+INFO:     Application startup complete.
+INFO:     Started server process [26452]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
