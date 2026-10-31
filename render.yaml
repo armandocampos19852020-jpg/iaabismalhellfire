@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: iaabismalhellfire
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: MODEL_PATH
+        value: models/abyssal_model.pte
+      - key: QDRANT_URL
+        sync: false
