@@ -1,2 +1,7 @@
-.vercel
-.env*
+__pycache__/
+*.pyc
+*.log
+*.zip
+.env
+node_modules/
+abyssal_engine

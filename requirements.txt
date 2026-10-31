@@ -1,0 +1,4 @@
+flask
+stripe
+qdrant-client
+gunicorn
