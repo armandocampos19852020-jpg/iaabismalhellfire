@@ -1,7 +1,7 @@
 __pycache__/
 *.pyc
 *.log
-*.zip
 .env
 node_modules/
-abyssal_engine
+.venv/
+*.sqlite3
