@@ -15,5 +15,3 @@ services:
         sync: false
       - key: MODEL_PATH
         value: models/abyssal_model.pte
-      - key: QDRANT_URL
-        sync: false

@@ -24,4 +24,4 @@ COPY --from=build /abyssal_engine /app/abyssal_engine
 ENV PORT=8080
 EXPOSE 8080
 
-CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT} server:app"]
+CMD ["sh", "-c", "uvicorn app_main:app --host 0.0.0.0 --port ${PORT}"]
