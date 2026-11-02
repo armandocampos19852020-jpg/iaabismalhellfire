@@ -25,10 +25,10 @@ const { tracks: ALL, index: IDX } = loadCatalog();
 
 export async function GET() {
   return NextResponse.json({
-    engine: "ABYSSAL ENGINE CORE v5.0 // CCC-QUANTUM",
-    status: "ONLINE_24_7",
-    total_tracks: ALL.length,
-    vector_search: "QDRANT_ACTIVE"
+    version: "5.0.0",
+    engine: "IAABISMAL HELLFIRE CORE",
+    status: "ONLINE",
+    total_tracks: ALL.length
   });
 }
 

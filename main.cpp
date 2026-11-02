@@ -14,8 +14,7 @@ extern "C" {
     }
 }
 
-int main(int argc, char** argv) {
-    std::cout << "{\"status\":\"ONLINE\",\"simd_alignment\":64,\"target\":\"x86-64-v3\",\"threads\":" 
-              << omp_get_max_threads() << "}" << std::endl;
+int main() {
+    std::cout << "{\"status\":\"ONLINE\",\"simd_alignment\":64,\"target\":\"x86-64-v3\"}" << std::endl;
     return 0;
 }
