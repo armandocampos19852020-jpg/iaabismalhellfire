@@ -1,35 +1,20 @@
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-import uvicorn, os
+from flask import Flask, jsonify, request
+import os, subprocess, stripe
 
-app = FastAPI()
-
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app = Flask(__name__)
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "sk_live_dummy")
 
 @app.get("/")
-def root(): return {"engine":"ONLINE"}
-@app.get("/health")
-def health(): return {"status":"healthy","engine":"active","core":"ABISMAL"}
+def home():
+    return jsonify({"engine": "AeroCore-X", "status": "online", "mode": "24-7"})
 
-@app.get("/api/webhook/meta")
-async def meta_verify(request: Request):
-    mode = request.query_params.get("hub.mode")
-    token = request.query_params.get("hub.verify_token")
-    challenge = request.query_params.get("hub.challenge")
-    if mode == "subscribe" and token == "abismal123":
-        return int(challenge) if challenge else 0
-    return {"status":"meta webhook ready"}
+@app.post("/predict")
+def predict():
+    return jsonify({"telemetria": "SIMD C++20 OK"})
 
-@app.post("/api/webhook/meta")
-async def meta_post(request: Request):
-    data = await request.json()
-    print(f"[META] {data}")
-    return {"status":"ok"}
-
-@app.post("/api/v1/roi/update")
-async def roi(request: Request):
-    data = await request.json()
-    return {"status":"ROI_UPDATE_SUCCESS"}
+@app.post("/webhook/stripe")
+def stripe_webhook():
+    return jsonify({"received": True})
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=int(os.environ.get("PORT",8082)))
+    app.run(host="0.0.0.0", port=8080)

@@ -1,5 +1,9 @@
 fastapi
 uvicorn
+flask
 gunicorn
 stripe
-requests
+qdrant-client
+torch
+pennylane
+qiskit
