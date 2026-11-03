@@ -13,7 +13,7 @@ jobs:
         with: { registry: ghcr.io, username: ${{ github.actor }}, password: ${{ secrets.GITHUB_TOKEN }} }
       - id: meta
         uses: docker/metadata-action@v5
-        with: { images: ghcr.io/armandocampos19852020-jpg/iaabismalhellfire }
+        with: { images: ghcr.io/https-enterprises-iaabismal/iaabismalhellfire }
       - uses: docker/build-push-action@v5
         with:
           context: .
